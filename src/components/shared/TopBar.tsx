@@ -16,7 +16,7 @@ const TopBar = () => {
   }, [isSuccess])
 
   return (
-    <section className="topbar">
+    <section className="sticky top-0 z-50 w-full bg-dark-2 md:hidden">
       <div className="flex-between px-5 py-4">
         <Link to="/" className="flex items-center">
           <img src="/assets/images/logo.svg" alt="logo" width={130} height={325} />

@@ -3,13 +3,12 @@ import { Link, NavLink, useLocation } from "react-router-dom"
 import { useUserContext } from "@/context/AuthContext"
 import { Button } from "../ui/button"
 import { useSignOutAccount } from "@/lib/tanstack-query/queriesAndMutations"
-
 const LeftsideMenu = () => {
   const { user } = useUserContext()
   const { pathname } = useLocation()
   const { mutateAsync: signOut } = useSignOutAccount()
   return (
-    <nav className="leftsidebar">
+    <nav className="sticky left-0 top-0 hidden min-w-[270px] flex-col justify-between bg-dark-2 px-6 py-10 md:flex">
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex items-center">
           <img src="/assets/images/logo.svg" alt="logo" width={170} height={36} />

@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 const BottomBar = () => {
   const { pathname } = useLocation()
   return (
-    <section className='bottom-bar'>
+    <section className='flex-between sticky bottom-0 z-50 w-full rounded-t-[20px] bg-dark-2 px-5 py-4 md:hidden'>
       {bottombarLinks.map((link) => {
         const isActive = pathname === link.route
         return (

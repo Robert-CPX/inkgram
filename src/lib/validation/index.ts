@@ -13,3 +13,10 @@ export const SigninValidation = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(50),
 })
+
+export const CreatePostValidation = z.object({
+  caption: z.string().min(5, { message: 'Caption at least 5 characters' }).max(2200),
+  file: z.custom<File[]>(),
+  location: z.string().optional(),
+  tags: z.string().optional(),
+})
