@@ -9,7 +9,7 @@ import { CreatePostValidation } from "@/lib/validation"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import FileUploader from "../shared/FileUploader"
-import { useCreatePost } from "@/lib/tanstack-query/queriesAndMutations"
+import { useCreatePost, useUpdatePost } from "@/lib/tanstack-query/queriesAndMutations"
 import { useUserContext } from "@/context/AuthContext"
 import { toast } from "../ui/use-toast"
 import { useNavigate } from "react-router-dom"
@@ -25,7 +25,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const { user } = useUserContext()
   const navigate = useNavigate()
   const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost()
-
+  const { mutateAsync: updatePost, isPending: isUpdatingPost } = useUpdatePost()
   // 1. Define your form.
   const form = useForm<z.infer<typeof CreatePostValidation>>({
     resolver: zodResolver(CreatePostValidation),
@@ -39,14 +39,28 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof CreatePostValidation>) {
-    const newPost = await createPost({
-      ...values,
-      userId: user.id,
-    })
-    if (!newPost) {
-      toast({ title: "Something went wrong" })
+    if (action === 'Create') {
+      const newPost = await createPost({
+        ...values,
+        userId: user.id,
+      })
+      if (!newPost) {
+        toast({ title: "Something went wrong" })
+      }
+      navigate('/')
+    } else if (action === 'Update') {
+      if (!post) return
+      const updatedPost = await updatePost({
+        ...values,
+        postId: post.$id,
+        imageId: post?.imageId,
+        imageUrl: post?.imageUrl,
+      })
+      if (!updatedPost) {
+        toast({ title: "update post failed" })
+      }
+      navigate(`/posts/${updatedPost?.$id}`)
     }
-    navigate('/')
   }
 
   return (
@@ -55,6 +69,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
         <FormField
           control={form.control}
           name="caption"
+          defaultValue={post?.caption}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-white">Caption</FormLabel>
@@ -68,6 +83,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
         <FormField
           control={form.control}
           name="file"
+          defaultValue={post?.file}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-white">Add Photos</FormLabel>
@@ -84,6 +100,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
         <FormField
           control={form.control}
           name="location"
+          defaultValue={post?.location}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-white">Add Location</FormLabel>
@@ -97,6 +114,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
         <FormField
           control={form.control}
           name="tags"
+          defaultValue={post?.tags.join(',')}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-white">Add Tags (separated by comman &quot; , &quot;)</FormLabel>
@@ -109,9 +127,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <div className="flex w-full justify-end gap-4">
           <Button type="button" className="flex bg-dark-4 px-5 text-light-1" onClick={() => navigate(-1)}>Cancel</Button>
-          <Button type="submit" className="flex bg-primary-500 text-light-1 hover:bg-primary-500" disabled={isCreatingPost}>
-            {isCreatingPost && <Loader />}
-            {action} Post
+          <Button type="submit" className="flex bg-primary-500 text-light-1 hover:bg-primary-500" disabled={isCreatingPost || isUpdatingPost}>
+            {(isCreatingPost || isUpdatingPost) && <Loader />} {action} Post
           </Button>
         </div>
       </form>

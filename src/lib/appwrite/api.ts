@@ -1,4 +1,4 @@
-import { NewPost, NewUser } from "@/types";
+import { NewPost, NewUser, UpdatePost } from "@/types";
 import { ID, account, appwriteConfig, avatars, databases, storage } from "./config";
 import { Query } from "appwrite";
 
@@ -117,6 +117,59 @@ export const createPost = async (post: NewPost) => {
   }
 }
 
+export const updatePost = async (post: UpdatePost) => {
+  const hasNewFileUploaded = post.file.length > 0;
+  try {
+    let image = { imageId: post.imageId, imageUrl: post.imageUrl };
+
+    if (hasNewFileUploaded) {
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
+      const filePreviewUrl = getFilePreview(uploadedFile.$id);
+      if (!filePreviewUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      };
+      image = { imageId: uploadedFile.$id, imageUrl: filePreviewUrl }
+    }
+    const tags = post.tags ? post.tags.replace(/ /g, '').split(',') : [];
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        tags,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+        location: post.location,
+      }
+    );
+    if (!updatedPost) {
+      await deleteFile(image.imageId);
+      throw Error;
+    }
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const deletePost = async (postId: string, imageId: string) => {
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      postId
+    )
+    if (imageId) await deleteFile(imageId);
+    if (!statusCode) throw Error;
+    return { status: 'ok' }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const uploadFile = async (file: File) => {
   try {
     const uploadedFile = await storage.createFile(
@@ -146,6 +199,20 @@ export const deleteFile = async (fileId: string) => {
   try {
     await storage.deleteFile(appwriteConfig.storageId, fileId);
     return { status: 'ok' }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getPostById = async (postId: string) => {
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      postId
+    );
+    if (!post) throw Error;
+    return post;
   } catch (error) {
     console.log(error)
   }

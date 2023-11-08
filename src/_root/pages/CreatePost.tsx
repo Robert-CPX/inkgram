@@ -1,5 +1,4 @@
 import PostForm from "@/components/Forms/PostForm"
-// flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar
 const CreatePost = () => {
 
   return (
