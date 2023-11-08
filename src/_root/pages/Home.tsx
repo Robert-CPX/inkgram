@@ -1,21 +1,27 @@
 import PostCard from "@/components/Cards/PostCard"
+import Loader from "@/components/shared/Loader"
+import { useGetRecentPosts } from "@/lib/tanstack-query/queriesAndMutations"
 const Home = () => {
+  const { isPending, isError, data, error } = useGetRecentPosts()
   return (
-    <div className="custom-scrollbar flex flex-1 flex-col items-center gap-10 px-5 py-10 md:px-8 lg:p-14">
-      {[1, 2, 3, 4].map((_, index) => (
-        <PostCard
-          key={index}
-          userPic="https://picsum.photos/200"
-          name="John Doe"
-          username="@johndoe"
-          title="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, quae."
-          postPicUrl="https://picsum.photos/500"
-          tags={["tag1", "tag2", "tag3"]}
-          likes={100}
-          isLiked={false}
-          isCollected={false}
-        />
-      ))}
+    <div className="custom-scrollbar flex w-full max-w-screen-sm flex-1 flex-col items-center gap-6 px-5 py-10 md:gap-9 md:px-8 lg:p-14">
+      <h2 className="h3-bold md:h2-bold w-full text-left">Home Feed</h2>
+      {isPending && !data ? (
+        <Loader />
+      ) : (
+        isError ? (
+          <p>{error?.message}</p>
+        ) : (
+          <ul className="flex w-full flex-col gap-9">
+            {data?.documents.map((post, index) => (
+              <li key={`${post.caption}-${index}`}>
+                <PostCard post={post} />
+              </li>
+            ))}
+          </ul>
+        )
+      )
+      }
     </div>
   )
 }

@@ -14,7 +14,7 @@ const LeftsideMenu = () => {
           <img src="/assets/images/logo.svg" alt="logo" width={170} height={36} />
         </Link>
         <Link to={`/profile/${user.id}`} className="flex items-center gap-3">
-          <img src={user.imageUrl || 'assets/images/profile-placeholer.svg'} alt="profile" className="h-14 w-14 rounded-full" />
+          <img src={user.imageUrl || '/assets/icons/profile-placeholder.svg'} alt="profile" className="h-14 w-14 rounded-full" />
           <div className="flex flex-col">
             <p className="body-bold">{user.name}</p>
             <p className="small-regular text-light-3">@{user.username}</p>
