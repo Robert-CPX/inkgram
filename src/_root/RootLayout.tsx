@@ -9,7 +9,7 @@ const RootLayout = () => {
     <main className="w-full md:flex">
       <TopBar />
       <LeftsideMenu />
-      <section className='flex h-full flex-1 max-md:mb-9'>
+      <section className='flex h-full flex-1 overflow-scroll'>
         <Outlet />
       </section>
       <RightsideMenu />

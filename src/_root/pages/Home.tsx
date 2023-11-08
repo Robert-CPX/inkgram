@@ -1,8 +1,7 @@
 import PostCard from "@/components/Cards/PostCard"
-
 const Home = () => {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="custom-scrollbar flex flex-1 flex-col items-center gap-10 px-5 py-10 md:px-8 lg:p-14">
       {[1, 2, 3, 4].map((_, index) => (
         <PostCard
           key={index}
