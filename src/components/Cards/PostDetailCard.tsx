@@ -12,28 +12,25 @@ type PostDetailCardProps = {
 };
 
 const PostDetailCard = ({ post }: PostDetailCardProps) => {
-  console.log(post)
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const { mutateAsync: deletePost, isSuccess } = useDeletePost();
+  const { mutate: deletePost } = useDeletePost();
 
   if (!post.creator) return;
 
   const handleDelete = async () => {
-    await deletePost({ postId: post.$id, imageId: post.imageId });
-    if (isSuccess) {
-      navigate(-1)
-    }
+    deletePost({ postId: post.$id, imageId: post.imageId });
+    navigate(-1)
   }
 
   return (
-    <div className="w-full rounded-3xl border border-dark-4 bg-dark-2 p-5 lg:flex lg:p-7">
+    <div className="flex w-full max-w-5xl flex-col rounded-3xl bg-dark-3 p-5 lg:p-7 xl:flex-row">
       <img
         src={post.imageUrl || "/assets/icons/profile-placeholder.svg"}
         alt="post image"
-        className="mb-5 h-64 rounded-[24px] object-cover xs:h-[400px] lg:h-[450px]"
+        className="h-80 rounded-t-[30px] bg-dark-1 object-cover p-5 lg:h-[480px] xl:w-[48%] xl:rounded-l-[24px] xl:rounded-tr-none"
       />
-      <div className="flex flex-col lg:justify-between">
+      <div className="flex w-full flex-col lg:justify-between">
         <div className="flex flex-col">
           <div className="flex-between">
             <div className="flex items-center gap-3">
@@ -74,10 +71,10 @@ const PostDetailCard = ({ post }: PostDetailCardProps) => {
               </Link>
             </div>
           </div>
-          <div className="my-6 h-[1px] w-full bg-dark-4" />
-          <div className="small-medium lg:base-medium py-5">
+          <div className="my-4 h-[1px] w-full bg-dark-4" />
+          <div className="small-medium lg:base-medium">
             <p>{post.caption}</p>
-            <ul className="mt-2 flex gap-1">
+            <ul className="my-2 flex gap-1">
               {post.tags.map((tag: string, index: string) => (
                 <li key={`${tag}${index}`} className="small-regular text-light-3">
                   #{tag}
