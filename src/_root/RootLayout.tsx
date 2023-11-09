@@ -12,7 +12,7 @@ const RootLayout = () => {
       <section className='flex h-full flex-1 overflow-scroll'>
         <Outlet />
       </section>
-      <RightsideMenu />
+      {/* <RightsideMenu /> */}
       <BottomBar />
     </main>
   )
